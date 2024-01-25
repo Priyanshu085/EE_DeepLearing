@@ -1,8 +1,8 @@
 # EE_DeepLearning Repository
 
 [![GitHub stars](https://img.shields.io/github/stars/Priyanshu085/EE_DeepLearning.svg?style=social&label=Star&maxAge=2592000)](https://github.com/Priyanshu085/EE_DeepLearning/stargazers/)
-[![GitHub issues](https://img.shields.io/github/issues/Priyanshu085/EE_DeeepLearning.svg)](https://GitHub.com/Priyanshu085/EE_DeepLearning/issues/)
-[![GitHub license](https://img.shields.io/github/license/Priyanshu085/EE_DeepLearning.svg)](https://github.com/Priyanshu085/EE_DeepLearning/blob/main/LICENSE)
+<!-- [![GitHub issues](https://img.shields.io/github/issues/Priyanshu085/EE_DeeepLearning.svg)](https://GitHub.com/Priyanshu085/EE_DeepLearning/issues/) -->
+[![GitHub license](https://img.shields.io/github/license/Priyanshu085/EE_DeepLearning.svg)](https://github.com/Priyanshu085/EE_DeepLearning/blob/my/LICENSE)
 
 ## Overview
 This repository contains code and notes related to my learning journey in deep learning. I use it to track my progress, store code snippets, and document key concepts in Notion.
