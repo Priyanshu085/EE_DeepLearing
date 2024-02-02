@@ -1,7 +1,7 @@
 import tensorflow as tf
-from tensorflow.keras.applications import VGG16
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Flatten
+from keras.applications import VGG16
+from keras.models import Sequential
+from keras.layers import Dense, Flatten
 
 # Load pre-trained VGG16 model
 base_model = VGG16(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
