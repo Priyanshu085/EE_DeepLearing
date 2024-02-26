@@ -46,7 +46,7 @@ def imshow(image, title=None):
 # Function to preprocess image for VGG
 def preprocess_img(image):
     image = tf.cast(image, dtype=tf.float32)
-    image = tf.keras.applications.vgg19.preprocess_input(image)
+    image = keras.applications.vgg19.preprocess_input(image)
     return image
 
 # Function to deprocess image for display
@@ -67,3 +67,76 @@ def deprocess_img(processed_img):
 
     x = np.clip(x, 0, 255).astype('uint8')
     return x
+
+# Function to get content and style representations
+def get_feature_representations(model, content_path, style_path):
+    # Load and preprocess content image
+    content_image = load_img(content_path)
+    content_image = preprocess_img(content_image)
+
+    # Load and preprocess style image
+    style_image = load_img(style_path)
+    style_image = preprocess_img(style_image)
+
+    # Get the content and style feature representations
+    style_outputs = model(style_image)
+    content_outputs = model(content_image)
+
+    # Get the style features
+    style_features = [style_layer[0] for style_layer in style_outputs[:num_style_layers]]
+
+    # Get the content features
+    content_features = [content_layer[0] for content_layer in content_outputs[num_style_layers:]]
+    return style_features, content_features
+
+# Function to compute gram matrix
+def gram_matrix(input_tensor):
+    result = tf.linalg.einsum('bijc,bijd->bcd', input_tensor, input_tensor)
+    input_shape = tf.shape(input_tensor)
+    num_locations = tf.cast(input_shape[1]*input_shape[2], tf.float32)
+    return result/(num_locations)
+
+# Function to compute the style loss
+def style_loss(style_targets, style_outputs):
+    style_loss = tf.add_n([tf.reduce_mean((style_targets[i]-style_outputs[i])**2) 
+                           for i in range(len(style_targets))])
+    return style_loss
+
+# Function to compute the content loss
+def content_loss(content_targets, content_outputs):
+    content_loss = tf.add_n([tf.reduce_mean((content_targets[i]-content_outputs[i])**2) 
+                             for i in range(len(content_targets))])
+    return content_loss
+
+# Function to compute total variation loss
+def total_variation_loss(image):
+    x_deltas = image[:,:,1:,:] - image[:,:,:-1,:]
+    y_deltas = image[:,1:,:,:] - image[:,:-1,:,:]
+
+    return tf.reduce_sum(tf.abs(x_deltas)) + tf.reduce_sum(tf.abs(y_deltas))
+
+# Function to compute total loss
+def compute_loss(model, loss_weights, init_image, gram_style_features, content_features):
+    style_weight, content_weight = loss_weights
+
+    model_outputs = model(init_image)
+
+    style_output_features = model_outputs[:num_style_layers]
+    content_output_features = model_outputs[num_style_layers:]
+
+    style_score = style_loss(gram_style_features, style_output_features)
+    content_score = content_loss(content_features, content_output_features)
+    tv_score = total_variation_loss(init_image)
+
+    style_score *= style_weight / num_style_layers
+    content_score *= content_weight / num_content_layers
+    tv_score *= 1e-6
+    return style_score + content_score + tv_score
+
+# Function to compute gradients
+@tf.function()
+def compute_grads(cfg):
+    with tf.GradientTape() as tape:
+        all_loss = compute_loss(**cfg)
+    total_loss = all_loss
+    return tape.gradient(total_loss, cfg['init_image']), all_loss
