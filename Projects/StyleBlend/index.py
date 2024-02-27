@@ -185,3 +185,10 @@ def style_transfer(content_path, style_path, num_iterations=1000, content_weight
         if i % 100 == 0:
             print(f"Iteration: {i}, Total loss: {loss}")
     return best_img
+
+content_path = 'content_image.jpg'
+style_path = 'style_image.jpg'
+output_image = style_transfer(content_path, style_path)
+plt.imshow(output_image)
+plt.axis('off')
+plt.show()
