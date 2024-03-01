@@ -44,3 +44,31 @@ def build_gan(generator, discriminator):
     gan = Model(gan_input, gan_output)
     gan.compile(loss='binary_crossentropy', optimizer=Adam(lr=0.0002, beta_1=0.5))
     return gan
+
+# Define training function
+def train_gan(generator, discriminator, gan, iterations, batch_size, latent_dim, anime_images):
+    for iteration in range(iterations):
+        # Train discriminator
+        idx = np.random.randint(0, anime_images.shape[0], batch_size)
+        real_images = anime_images[idx]
+        noise = np.random.normal(0, 1, (batch_size, latent_dim))
+        fake_images = generator.predict(noise)
+        X = np.concatenate([real_images, fake_images])
+        y_dis = np.zeros(2 * batch_size)
+        y_dis[:batch_size] = 0.9  # Label smoothing
+        discriminator.trainable = True
+        d_loss = discriminator.train_on_batch(X, y_dis)
+        
+        # Train generator
+        noise = np.random.normal(0, 1, (batch_size, latent_dim))
+        y_gen = np.ones(batch_size)
+        discriminator.trainable = False
+        g_loss = gan.train_on_batch(noise, y_gen)
+        
+        # Print progress
+        print(f'Iteration {iteration + 1}/{iterations} [D loss: {d_loss:.4f}, G loss: {g_loss:.4f}]')
+
+# Define hyperparameters
+latent_dim = 100
+iterations = 10000
+batch_size = 128
