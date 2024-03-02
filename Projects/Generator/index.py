@@ -72,3 +72,16 @@ def train_gan(generator, discriminator, gan, iterations, batch_size, latent_dim,
 latent_dim = 100
 iterations = 10000
 batch_size = 128
+
+# Build and compile discriminator
+discriminator = build_discriminator(anime_images.shape[1:])
+discriminator.compile(loss='binary_crossentropy', optimizer=Adam(lr=0.0002, beta_1=0.5), metrics=['accuracy'])
+
+# Build generator
+generator = build_generator(latent_dim)
+
+# Build and compile GAN
+gan = build_gan(generator, discriminator)
+
+# Train GAN
+train_gan(generator, discriminator, gan, iterations, batch_size, latent_dim, anime_images)
