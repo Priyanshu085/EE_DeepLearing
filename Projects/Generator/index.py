@@ -85,3 +85,4 @@ gan = build_gan(generator, discriminator)
 
 # Train GAN
 train_gan(generator, discriminator, gan, iterations, batch_size, latent_dim, anime_images)
+
