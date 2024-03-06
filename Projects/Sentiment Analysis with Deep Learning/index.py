@@ -29,3 +29,13 @@ model.fit(x_train, y_train, epochs=5, batch_size=128, validation_data=(x_test, y
 # Evaluate the model
 loss, accuracy = model.evaluate(x_test, y_test)
 print(f"Test Loss: {loss}, Test Accuracy: {accuracy}")
+
+# Predict sentiment for new reviews
+def predict_sentiment(review_text):
+    # Preprocess the input text
+    review_seq = imdb.get_word_index()[word.lower()] + 3  # Convert words to indices
+    review_seq = pad_sequences([review_seq], maxlen=max_len)  # Pad sequence
+    # Predict sentiment (positive or negative)
+    prediction = model.predict(review_seq)
+    sentiment = "Positive" if prediction > 0.5 else "Negative"
+    return sentiment
